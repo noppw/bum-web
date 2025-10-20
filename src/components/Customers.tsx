@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TablePagination,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -74,6 +75,8 @@ const Customers: React.FC = () => {
   const [panelHeight, setPanelHeight] = useState(220);
   const [isResizing, setIsResizing] = useState(false);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   React.useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -199,7 +202,9 @@ const Customers: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredCustomers.map((customer) => (
+            {filteredCustomers
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((customer) => (
               <TableRow
                 key={customer.id}
                 hover
@@ -240,6 +245,18 @@ const Customers: React.FC = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={filteredCustomers.length}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+        />
       </TableContainer>
 
       {selectedCustomer && (

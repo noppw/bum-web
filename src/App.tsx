@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { LanguageProvider } from './contexts/LanguageContext';
-import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
 import Suppliers from './components/Suppliers';
@@ -15,6 +15,8 @@ import Installment from './components/Installment';
 import Purchase from './components/Purchase';
 import PurchaseInstallment from './components/PurchaseInstallment';
 import Inventory from './components/Inventory';
+import { useUser } from '@clerk/clerk-react';
+import Login from './components/Login';
 
 const theme = createTheme({
   palette: {
@@ -195,26 +197,42 @@ const theme = createTheme({
   },
 });
 
-interface User {
-  username: string;
-  role: string;
+function RequireAuth({ children }: { children: React.ReactNode }): JSX.Element {
+  const { isLoaded, isSignedIn, user } = useUser();
+  
+  // eslint-disable-next-line no-console
+  console.log('RequireAuth - isLoaded:', isLoaded, 'isSignedIn:', isSignedIn, 'user:', user);
+  
+  if (!isLoaded) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '100vh',
+          gap: 2
+        }}
+      >
+        <CircularProgress />
+        <Typography variant="body1">Loading...</Typography>
+      </Box>
+    );
+  }
+  if (!isSignedIn) {
+    // eslint-disable-next-line no-console
+    console.log('User not signed in, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+  
+  // eslint-disable-next-line no-console
+  console.log('User is signed in, rendering children');
+  return <>{children}</>;
 }
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-
-  const handleLogin = (username: string, password: string) => {
-    // Simple authentication - in real app, this would be an API call
-    if (username === 'admin' && password === 'admin123') {
-      setUser({ username, role: 'admin' });
-      return true;
-    }
-    return false;
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
+  // Authentication is handled by Clerk components and hooks
 
   return (
     <LanguageProvider>
@@ -222,138 +240,112 @@ function App() {
         <CssBaseline />
         <Router>
           <Routes>
-            <Route 
-              path="/login" 
-              element={
-                user ? <Navigate to="/dashboard" replace /> : 
-                <Login onLogin={handleLogin} />
-              } 
-            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/login/sso-callback" element={<Login />} />
             <Route 
               path="/" 
               element={
-                user ? <Navigate to="/dashboard" replace /> : 
                 <Navigate to="/login" replace />
               } 
             />
             <Route 
               path="/dashboard" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Dashboard />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/suppliers" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Suppliers />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/products" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Products />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/access" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <AccessManagement />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/sales" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Sales />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/customers" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Customers />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/inventory" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Inventory />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/installment" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Installment />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/purchase" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <Purchase />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
             <Route 
               path="/purchase-installment" 
               element={
-                user ? (
-                  <Layout user={user} onLogout={handleLogout}>
+                <RequireAuth>
+                  <Layout>
                     <PurchaseInstallment />
                   </Layout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                </RequireAuth>
               } 
             />
           </Routes>

@@ -10,10 +10,7 @@ import {
   IconButton,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
-  Avatar,
-  Menu,
   MenuItem,
   Select,
   FormControl,
@@ -22,8 +19,6 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  AccountCircle,
-  Logout,
   Language as LanguageIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -35,30 +30,26 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-
-interface User {
-  username: string;
-  role: string;
-}
+import { UserButton } from '@clerk/clerk-react';
 
 interface LayoutProps {
   children: React.ReactNode;
-  user: User;
-  onLogout: () => void;
 }
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 64;
 
-const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [salesMenuOpen, setSalesMenuOpen] = useState(true);
   const [purchaseMenuOpen, setPurchaseMenuOpen] = useState(true);
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // eslint-disable-next-line no-console
+  console.log('Layout component rendering, current path:', location.pathname);
 
   // Load sidebar state from localStorage on mount
   useEffect(() => {
@@ -115,18 +106,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
     setPurchaseMenuOpen(!purchaseMenuOpen);
   };
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    onLogout();
-    handleMenuClose();
-  };
+  // Clerk's <UserButton /> handles sign-out UI and actions
 
   const handleLanguageChange = (event: any) => {
     setLanguage(event.target.value);
@@ -348,45 +328,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
             </IconButton>
           </Box>
 
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenuClick}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem disabled>
-              <Avatar sx={{ width: 24, height: 24, mr: 1 }}>
-                {user.username.charAt(0).toUpperCase()}
-              </Avatar>
-              {user.username}
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              {t('common.logout')}
-            </MenuItem>
-          </Menu>
+          <UserButton afterSignOutUrl="/login" appearance={{ elements: { userButtonAvatarBox: { width: 28, height: 28 }}}} />
         </Toolbar>
       </AppBar>
       <Box

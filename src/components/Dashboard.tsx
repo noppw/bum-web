@@ -22,6 +22,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 const Dashboard: React.FC = () => {
   const { t } = useLanguage();
+  
+  // eslint-disable-next-line no-console
+  console.log('Dashboard component rendering');
 
   const summaryData = [
     {
