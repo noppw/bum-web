@@ -31,6 +31,7 @@ import DetailsPanel from './DetailsPanel';
 interface Supplier {
   id: string;
   name: string;
+  branch: string;
   contact: string;
   email: string;
   phone: string;
@@ -44,6 +45,7 @@ const Suppliers: React.FC = () => {
     {
       id: '1',
       name: 'ABC Manufacturing Co.',
+      branch: 'Branch A',
       contact: 'John Smith',
       email: 'john@abc.com',
       phone: '+1-555-0123',
@@ -53,6 +55,7 @@ const Suppliers: React.FC = () => {
     {
       id: '2',
       name: 'XYZ Electronics Ltd.',
+      branch: 'Branch B',
       contact: 'Sarah Johnson',
       email: 'sarah@xyz.com',
       phone: '+1-555-0456',
@@ -62,6 +65,7 @@ const Suppliers: React.FC = () => {
     {
       id: '3',
       name: 'Tech Solutions Inc.',
+      branch: 'Branch C',
       contact: 'Mike Brown',
       email: 'mike@tech.com',
       phone: '+1-555-0789',
@@ -81,6 +85,7 @@ const Suppliers: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [formData, setFormData] = useState({
     name: '',
+    branch: '',
     contact: '',
     email: '',
     phone: '',
@@ -108,6 +113,7 @@ const Suppliers: React.FC = () => {
 
   const filteredSuppliers = suppliers.filter(supplier =>
     supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.branch.toLowerCase().includes(searchTerm.toLowerCase()) ||
     supplier.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
     supplier.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -130,6 +136,7 @@ const Suppliers: React.FC = () => {
     setEditing(null);
     setFormData({
       name: '',
+      branch: '',
       contact: '',
       email: '',
       phone: '',
@@ -143,6 +150,7 @@ const Suppliers: React.FC = () => {
     setEditing(supplier);
     setFormData({
       name: supplier.name,
+      branch: supplier.branch,
       contact: supplier.contact,
       email: supplier.email,
       phone: supplier.phone,
@@ -227,6 +235,7 @@ const Suppliers: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>{t('suppliers.name')}</TableCell>
+              <TableCell>{t('suppliers.branch')}</TableCell>
               <TableCell>{t('suppliers.contact')}</TableCell>
               <TableCell>{t('suppliers.email')}</TableCell>
               <TableCell>{t('suppliers.phone')}</TableCell>
@@ -245,6 +254,7 @@ const Suppliers: React.FC = () => {
                 sx={{ cursor: 'pointer' }}
               >
                 <TableCell>{supplier.name}</TableCell>
+                <TableCell>{supplier.branch}</TableCell>
                 <TableCell>{supplier.contact}</TableCell>
                 <TableCell>{supplier.email}</TableCell>
                 <TableCell>{supplier.phone}</TableCell>
@@ -285,6 +295,10 @@ const Suppliers: React.FC = () => {
         >
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 2 }}>
             <Box>
+              <Typography variant="caption" color="text.secondary">{t('suppliers.branch')}</Typography>
+              <Typography variant="body2">{selectedSupplier.branch}</Typography>
+            </Box>
+            <Box>
               <Typography variant="caption" color="text.secondary">{t('suppliers.contact')}</Typography>
               <Typography variant="body2">{selectedSupplier.contact}</Typography>
             </Box>
@@ -319,6 +333,12 @@ const Suppliers: React.FC = () => {
               label={t('suppliers.name')}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              fullWidth
+            />
+            <TextField
+              label={t('suppliers.branch')}
+              value={formData.branch}
+              onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
               fullWidth
             />
             <TextField

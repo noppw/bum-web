@@ -18,9 +18,11 @@ import Inventory from './components/Inventory';
 import { useUser } from '@clerk/clerk-react';
 import Login from './components/Login';
 
-const theme = createTheme({
+export const ColorModeContext = React.createContext<{ mode: 'light' | 'dark'; toggle: () => void; isAuto: boolean; colorMode: string }>({ mode: 'light', toggle: () => {}, isAuto: false, colorMode: 'light' });
+
+const getTheme = (mode: 'light' | 'dark') => createTheme({
   palette: {
-    mode: 'light',
+    mode,
     primary: {
       main: '#2e7d32',
       light: '#4caf50',
@@ -33,34 +35,9 @@ const theme = createTheme({
       dark: '#9a0036',
       contrastText: '#ffffff',
     },
-    error: {
-      main: '#f44336',
-      light: '#e57373',
-      dark: '#d32f2f',
-    },
-    warning: {
-      main: '#ff9800',
-      light: '#ffb74d',
-      dark: '#f57c00',
-    },
-    info: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2',
-    },
-    success: {
-      main: '#4caf50',
-      light: '#81c784',
-      dark: '#388e3c',
-    },
     background: {
-      default: '#fafafa',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)',
-      disabled: 'rgba(0, 0, 0, 0.38)',
+      default: mode === 'light' ? '#fafafa' : '#0f172a',
+      paper: mode === 'light' ? '#ffffff' : '#111827',
     },
   },
   typography: {
@@ -125,19 +102,12 @@ const theme = createTheme({
           fontWeight: 500,
           padding: '6px 12px',
         },
-        contained: {
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          '&:hover': {
-            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-          },
-        },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         },
       },
     },
@@ -167,7 +137,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiTableHead-root': {
-            backgroundColor: '#f5f5f5',
+            backgroundColor: mode === 'light' ? '#f5f5f5' : '#374151',
           },
         },
       },
@@ -190,7 +160,8 @@ const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          borderRight: '1px solid #e0e0e0',
+          borderRight: mode === 'light' ? '1px solid #e0e0e0' : '1px solid #374151',
+          backgroundColor: mode === 'light' ? '#f8f9fb' : '#1f2937',
         },
       },
     },
@@ -233,10 +204,62 @@ function RequireAuth({ children }: { children: React.ReactNode }): JSX.Element {
 
 function App() {
   // Authentication is handled by Clerk components and hooks
+  const [colorMode, setColorMode] = React.useState<string>(() => {
+    const saved = localStorage.getItem('colorMode');
+    return saved || 'auto';
+  });
+
+  const [mode, setMode] = React.useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('colorMode');
+    if (saved === 'dark' || saved === 'light') {
+      return saved as 'light' | 'dark';
+    }
+    // Auto-detect system preference if no saved preference or auto mode
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('colorMode', colorMode);
+  }, [colorMode]);
+
+  // Listen for system theme changes
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      // Only auto-switch if explicitly in auto mode
+      if (colorMode === 'auto') {
+        setMode(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [colorMode]);
+
+  const theme = React.useMemo(() => getTheme(mode), [mode]);
+
+  const toggleColorMode = () => {
+    if (colorMode === 'light') {
+      setMode('dark');
+      setColorMode('dark');
+    } else if (colorMode === 'dark') {
+      // Set to auto mode
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setMode(systemPrefersDark ? 'dark' : 'light');
+      setColorMode('auto');
+    } else {
+      // If auto or no preference, set to light
+      setMode('light');
+      setColorMode('light');
+    }
+  };
+
+  const isAuto = colorMode === 'auto';
 
   return (
     <LanguageProvider>
-      <ThemeProvider theme={theme}>
+      <ColorModeContext.Provider value={{ mode, toggle: toggleColorMode, isAuto, colorMode }}>
+        <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
           <Routes>
@@ -350,7 +373,8 @@ function App() {
             />
           </Routes>
         </Router>
-      </ThemeProvider>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
     </LanguageProvider>
   );
 }

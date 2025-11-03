@@ -27,9 +27,13 @@ import {
   Search as SearchIcon,
   HelpOutline as HelpOutlineIcon,
   NotificationsNone as NotificationsNoneIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+  AutoMode as AutoModeIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { ColorModeContext } from '../App';
 import { UserButton } from '@clerk/clerk-react';
 
 interface LayoutProps {
@@ -45,6 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [salesMenuOpen, setSalesMenuOpen] = useState(true);
   const [purchaseMenuOpen, setPurchaseMenuOpen] = useState(true);
   const { language, setLanguage, t } = useLanguage();
+  const colorMode = React.useContext(ColorModeContext);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -137,14 +142,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             borderLeft: '3px solid transparent',
             minHeight: 40,
             '&:hover': {
-              backgroundColor: '#eef3f8',
+              backgroundColor: 'action.hover',
             },
           },
           '& .MuiListItemButton-root.Mui-selected': {
             backgroundColor: 'transparent',
-            borderLeftColor: '#1f73b7',
+            borderLeftColor: 'primary.main',
             '&:hover': {
-              backgroundColor: '#e8f1f8',
+              backgroundColor: 'action.selected',
             },
           },
           '& .MuiListItemIcon-root': {
@@ -326,6 +331,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <IconButton color="inherit" aria-label="notifications">
               <NotificationsNoneIcon />
             </IconButton>
+            <IconButton color="inherit" sx={{ ml: 0.5 }} onClick={colorMode.toggle} aria-label="toggle color mode">
+              {colorMode.isAuto ? (
+                <AutoModeIcon />
+              ) : colorMode.mode === 'dark' ? (
+                <LightModeIcon />
+              ) : (
+                <DarkModeIcon />
+              )}
+            </IconButton>
           </Box>
 
           <UserButton afterSignOutUrl="/login" appearance={{ elements: { userButtonAvatarBox: { width: 28, height: 28 }}}} />
@@ -348,7 +362,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              backgroundColor: '#f8f9fb',
             },
           }}
         >
@@ -362,7 +375,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               boxSizing: 'border-box', 
               width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
               transition: 'width 0.3s ease',
-              backgroundColor: '#f8f9fb',
             },
           }}
           open

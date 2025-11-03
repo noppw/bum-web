@@ -64,6 +64,7 @@ const translations = {
     'suppliers.title': 'Suppliers',
     'suppliers.addSupplier': 'Add Supplier',
     'suppliers.name': 'Name',
+    'suppliers.branch': 'Branch',
     'suppliers.contact': 'Contact',
     'suppliers.email': 'Email',
     'suppliers.phone': 'Phone',
@@ -75,10 +76,10 @@ const translations = {
     'products.addProduct': 'Add Product',
     'products.sku': 'SKU',
     'products.name': 'Name',
+    'products.brand': 'Brand',
     'products.model': 'Model',
     'products.category': 'Category',
-    'products.imageUrl': 'Product Image URL',
-    'products.tisi': 'TISI',
+    'products.description': 'Description',
     'products.lastUpdated': 'Last Updated',
 
     // Access Management
@@ -176,6 +177,7 @@ const translations = {
     // Suppliers
     'suppliers.title': 'ซัพพลายเออร์',
     'suppliers.addSupplier': 'เพิ่มซัพพลายเออร์',
+    'suppliers.branch': 'สาขา',
     'suppliers.name': 'ชื่อ',
     'suppliers.contact': 'ผู้ติดต่อ',
     'suppliers.email': 'อีเมล',
@@ -188,10 +190,10 @@ const translations = {
     'products.addProduct': 'เพิ่มผลิตภัณฑ์',
     'products.sku': 'รหัสสินค้า',
     'products.name': 'ชื่อ',
+    'products.brand': 'ยี่ห้อ',
     'products.model': 'รุ่น',
     'products.category': 'หมวดหมู่',
-    'products.imageUrl': 'URL รูปภาพผลิตภัณฑ์',
-    'products.tisi': 'มอก',
+    'products.description': 'คำอธิบาย',
     'products.lastUpdated': 'อัปเดตล่าสุด',
 
     // Access Management

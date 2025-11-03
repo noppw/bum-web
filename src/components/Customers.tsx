@@ -35,10 +35,6 @@ import DetailsPanel from './DetailsPanel';
 interface Customer {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  company: string;
-  address: string;
   status: 'active' | 'inactive';
   lastContact: string;
 }
@@ -49,20 +45,12 @@ const Customers: React.FC = () => {
     {
       id: 'C-1001',
       name: 'John Smith',
-      email: 'john.smith@acme.com',
-      phone: '+1-555-0123',
-      company: 'Acme Corporation',
-      address: '123 Business St, City, State 12345',
       status: 'active',
       lastContact: '2025-01-15',
     },
     {
       id: 'C-1002',
       name: 'Jane Doe',
-      email: 'jane.doe@techcorp.com',
-      phone: '+1-555-0456',
-      company: 'Tech Corp',
-      address: '456 Tech Ave, City, State 12345',
       status: 'active',
       lastContact: '2025-01-14',
     },
@@ -94,38 +82,23 @@ const Customers: React.FC = () => {
   }, [isResizing]);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    phone: '',
-    company: '',
-    address: '',
     status: 'active' as 'active' | 'inactive',
   });
 
   const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.company.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleOpen = (customer?: Customer) => {
     if (customer) {
       setEditing(customer);
       setFormData({
         name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        company: customer.company,
-        address: customer.address,
         status: customer.status,
       });
     } else {
       setEditing(null);
       setFormData({
         name: '',
-        email: '',
-        phone: '',
-        company: '',
-        address: '',
         status: 'active',
       });
     }
@@ -133,7 +106,7 @@ const Customers: React.FC = () => {
   };
 
   const handleSave = () => {
-    if (!formData.name || !formData.email) return;
+    if (!formData.name) return;
 
     if (editing) {
       setCustomers(customers.map(c =>
@@ -157,7 +130,7 @@ const Customers: React.FC = () => {
   };
 
   const isFormValid = () => {
-    return formData.name && formData.email;
+    return formData.name;
   };
 
   return (
@@ -193,9 +166,6 @@ const Customers: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>{t('customers.name')}</TableCell>
-              <TableCell>{t('customers.email')}</TableCell>
-              <TableCell>{t('customers.phone')}</TableCell>
-              <TableCell>{t('customers.company')}</TableCell>
               <TableCell>{t('customers.status')}</TableCell>
               <TableCell>{t('customers.lastContact')}</TableCell>
               <TableCell>{t('common.actions')}</TableCell>
@@ -213,9 +183,6 @@ const Customers: React.FC = () => {
                 sx={{ cursor: 'pointer' }}
               >
                 <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.company}</TableCell>
                 <TableCell>
                   <Box
                     sx={{
@@ -271,22 +238,6 @@ const Customers: React.FC = () => {
         >
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 2 }}>
             <Box>
-              <Typography variant="caption" color="text.secondary">{t('customers.email')}</Typography>
-              <Typography variant="body2">{selectedCustomer.email}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="caption" color="text.secondary">{t('customers.phone')}</Typography>
-              <Typography variant="body2">{selectedCustomer.phone}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="caption" color="text.secondary">{t('customers.company')}</Typography>
-              <Typography variant="body2">{selectedCustomer.company}</Typography>
-            </Box>
-            <Box sx={{ gridColumn: { xs: 'auto', sm: '1 / span 2' } }}>
-              <Typography variant="caption" color="text.secondary">{t('customers.address')}</Typography>
-              <Typography variant="body2">{selectedCustomer.address}</Typography>
-            </Box>
-            <Box>
               <Typography variant="caption" color="text.secondary">{t('customers.lastContact')}</Typography>
               <Typography variant="body2">{selectedCustomer.lastContact}</Typography>
             </Box>
@@ -307,42 +258,6 @@ const Customers: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 fullWidth
                 required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label={t('customers.email')}
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                fullWidth
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label={t('customers.phone')}
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label={t('customers.company')}
-                value={formData.company}
-                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label={t('customers.address')}
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                fullWidth
-                multiline
-                rows={2}
               />
             </Grid>
             <Grid item xs={12} md={6}>

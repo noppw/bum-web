@@ -33,10 +33,10 @@ interface Product {
   id: string;
   sku: string;
   name: string;
+  brand: string;
   model: string;
   category: string;
-  imageUrl: string;
-  tisi: string;
+  description: string;
   lastUpdated: string;
 }
 
@@ -47,30 +47,30 @@ const Products: React.FC = () => {
       id: '1',
       sku: 'SKU-001',
       name: 'Electronic Component A',
+      brand: 'Brand A',
       model: 'EC-A-2024',
       category: 'Electronics',
-      imageUrl: 'https://example.com/image1.jpg',
-      tisi: 'TISI-001',
+      description: 'Description A',
       lastUpdated: '2024-01-15',
     },
     {
       id: '2',
       sku: 'SKU-002',
       name: 'Mechanical Part B',
+      brand: 'Brand B',
       model: 'MP-B-2024',
       category: 'Mechanical',
-      imageUrl: 'https://example.com/image2.jpg',
-      tisi: 'TISI-002',
+      description: 'Description B',
       lastUpdated: '2024-01-14',
     },
     {
       id: '3',
       sku: 'SKU-003',
       name: 'Chemical Material C',
+      brand: 'Brand C',
       model: 'CM-C-2024',
       category: 'Chemical',
-      imageUrl: 'https://example.com/image3.jpg',
-      tisi: 'TISI-003',
+      description: 'Description C',
       lastUpdated: '2024-01-13',
     },
   ]);
@@ -105,18 +105,20 @@ const Products: React.FC = () => {
   const [formData, setFormData] = useState({
     sku: '',
     name: '',
+    brand: '',
     model: '',
     category: '',
-    imageUrl: '',
-    tisi: '',
+    description: '',
     lastUpdated: '',
   });
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const paginatedProducts = filteredProducts.slice(
@@ -138,10 +140,10 @@ const Products: React.FC = () => {
     setFormData({
       sku: '',
       name: '',
+      brand: '',
       model: '',
       category: '',
-      imageUrl: '',
-      tisi: '',
+      description: '',
       lastUpdated: new Date().toISOString().split('T')[0],
     });
     setOpenDialog(true);
@@ -152,10 +154,10 @@ const Products: React.FC = () => {
     setFormData({
       sku: product.sku,
       name: product.name,
+      brand: product.brand,
       model: product.model,
       category: product.category,
-      imageUrl: product.imageUrl,
-      tisi: product.tisi,
+      description: product.description,
       lastUpdated: product.lastUpdated,
     });
     setOpenDialog(true);
@@ -237,10 +239,10 @@ const Products: React.FC = () => {
             <TableRow>
               <TableCell>{t('products.sku')}</TableCell>
               <TableCell>{t('products.name')}</TableCell>
+              <TableCell>{t('products.brand')}</TableCell>
               <TableCell>{t('products.model')}</TableCell>
               <TableCell>{t('products.category')}</TableCell>
-              <TableCell>{t('products.imageUrl')}</TableCell>
-              <TableCell>{t('products.tisi')}</TableCell>
+              <TableCell>{t('products.description')}</TableCell>
               <TableCell>{t('products.lastUpdated')}</TableCell>
               <TableCell>{t('common.actions')}</TableCell>
             </TableRow>
@@ -256,10 +258,10 @@ const Products: React.FC = () => {
               >
                 <TableCell>{product.sku}</TableCell>
                 <TableCell>{product.name}</TableCell>
+                <TableCell>{product.brand}</TableCell>
                 <TableCell>{product.model}</TableCell>
                 <TableCell>{product.category}</TableCell>
-                <TableCell>{product.imageUrl}</TableCell>
-                <TableCell>{product.tisi}</TableCell>
+                <TableCell>{product.description}</TableCell>
                 <TableCell>{product.lastUpdated}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleEdit(product)}>
@@ -296,6 +298,10 @@ const Products: React.FC = () => {
         >
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 2 }}>
             <Box>
+              <Typography variant="caption" color="text.secondary">{t('products.brand')}</Typography>
+              <Typography variant="body2">{selectedProduct.brand}</Typography>
+            </Box>
+            <Box>
               <Typography variant="caption" color="text.secondary">{t('products.model')}</Typography>
               <Typography variant="body2">{selectedProduct.model}</Typography>
             </Box>
@@ -304,12 +310,8 @@ const Products: React.FC = () => {
               <Typography variant="body2">{selectedProduct.category}</Typography>
             </Box>
             <Box>
-              <Typography variant="caption" color="text.secondary">{t('products.tisi')}</Typography>
-              <Typography variant="body2">{selectedProduct.tisi}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="caption" color="text.secondary">{t('products.imageUrl')}</Typography>
-              <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>{selectedProduct.imageUrl}</Typography>
+              <Typography variant="caption" color="text.secondary">{t('products.description')}</Typography>
+              <Typography variant="body2">{selectedProduct.description}</Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">{t('products.lastUpdated')}</Typography>
@@ -344,6 +346,14 @@ const Products: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+                label={t('products.brand')}
+                value={formData.brand}
+                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
                 label={t('products.model')}
                 value={formData.model}
                 onChange={(e) => setFormData({ ...formData, model: e.target.value })}
@@ -360,17 +370,9 @@ const Products: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                label={t('products.imageUrl')}
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label={t('products.tisi')}
-                value={formData.tisi}
-                onChange={(e) => setFormData({ ...formData, tisi: e.target.value })}
+                label={t('products.description')}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 fullWidth
               />
             </Grid>
